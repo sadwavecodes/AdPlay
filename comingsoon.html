@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name='admaven-placement' content='Bqjs8rjg6'>
+    <title>AdPlay | Coming Soon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #06090f;
+            --card-bg: rgba(17, 26, 46, 0.9);
+            --accent: #22c55e;
+            --accent-glow: rgba(34, 197, 94, 0.3);
+            --text-dim: #94a3b8;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100svh;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            color: white;
+        }
+
+        .background {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 10% 10%, rgba(34, 197, 94, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 90% 90%, rgba(34, 197, 94, 0.08) 0%, transparent 50%);
+        }
+
+        .background::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            opacity: 0.03;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 40px 30px;
+            border-radius: 28px;
+            text-align: center;
+            width: 90%;
+            max-width: 360px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .logo {
+            font-weight: 900;
+            font-size: 28px;
+            letter-spacing: -1px;
+            margin-bottom: 4px;
+        }
+
+        .logo span { color: var(--accent); }
+
+        .sub {
+            color: var(--text-dim);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 35px;
+        }
+
+        .coin-container {
+            width: 110px;
+            height: 110px;
+            margin: 0 auto 35px;
+            perspective: 1000px;
+        }
+
+        #coin {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 2s cubic-bezier(0.2, 0, 0.1, 1);
+        }
+
+        .side {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 24px;
+            border: 4px solid #facc15;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.4), 0 0 20px rgba(250, 204, 21, 0.15);
+        }
+
+        .heads { background: linear-gradient(135deg, #fef08a, #ca8a04); color: #713f12; }
+        .tails { background: linear-gradient(135deg, #eab308, #854d0e); color: #422006; transform: rotateY(180deg); }
+
+        button {
+            background: var(--accent);
+            color: #052e16;
+            border: none;
+            width: 100%;
+            padding: 16px;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.1s ease, background 0.2s ease;
+            box-shadow: 0 8px 20px var(--accent-glow);
+        }
+
+        button:active {
+            transform: scale(0.96);
+            background: #16a34a;
+        }
+
+        button:disabled { 
+            opacity: 0.4; 
+            transform: scale(1); 
+            box-shadow: none;
+        }
+
+        .stats {
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            color: var(--text-dim);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .stats b { color: #fff; }
+    </style>
+</head>
+<body>
+
+    <div class="background"></div>
+
+    <div class="card">
+        <div class="logo">AdPlay<span>.fun</span></div>
+        <div class="sub">Coming Soon</div>
+
+        <div class="coin-container">
+            <div id="coin">
+                <div class="side heads">H</div>
+                <div class="side tails">T</div>
+            </div>
+        </div>
+
+        <button id="flipBtn">FLIP COIN</button>
+
+        <div class="stats">
+            <span>WINS: <b id="wins">0</b></span>
+            <span>FLIPS: <b id="flips">0</b></span>
+        </div>
+    </div>
+
+    <script>
+        const coin = document.getElementById('coin');
+        const btn = document.getElementById('flipBtn');
+        const winDisplay = document.getElementById('wins');
+        const flipDisplay = document.getElementById('flips');
+        
+        // Load saved stats
+        let wins = parseInt(localStorage.getItem('adplay_wins')) || 0;
+        let flips = parseInt(localStorage.getItem('adplay_flips')) || 0;
+        let currentRotation = 0;
+
+        winDisplay.innerText = wins;
+        flipDisplay.innerText = flips;
+
+        btn.addEventListener('click', () => {
+            if (btn.disabled) return;
+            
+            btn.disabled = true;
+            flips++;
+            localStorage.setItem('adplay_flips', flips);
+            
+            const isHeads = Math.random() < 0.5;
+            const extraSpins = (Math.floor(Math.random() * 4) + 6) * 360; 
+            currentRotation += extraSpins + (isHeads ? 0 : 180);
+
+            coin.style.transform = `rotateY(${currentRotation}deg)`;
+
+            if (window.navigator.vibrate) window.navigator.vibrate(50);
+
+            setTimeout(() => {
+                if (isHeads) {
+                    wins++;
+                    localStorage.setItem('adplay_wins', wins);
+                }
+                winDisplay.innerText = wins;
+                flipDisplay.innerText = flips;
+                btn.disabled = false;
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
