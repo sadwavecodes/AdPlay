@@ -44,7 +44,6 @@
                 radial-gradient(circle at 85% 85%, rgba(34, 197, 94, 0.1) 0%, transparent 40%);
         }
 
-        /* Subtle grain overlay */
         .background::before {
             content: "";
             position: absolute;
@@ -201,7 +200,6 @@
         const btn = document.getElementById('flipBtn');
         const winDisplay = document.getElementById('wins');
         
-        // Load saved wins
         let wins = parseInt(localStorage.getItem('adplay_wins_only')) || 0;
         let currentRotation = 0;
 
@@ -209,37 +207,43 @@
 
         btn.addEventListener('click', () => {
             if (btn.disabled) return;
-            
             btn.disabled = true;
             
-            // Logic: 50/50 chance
             const isHeads = Math.random() < 0.5;
             
-            // Keep your exact animation logic
+            // Logic Fix:
+            // 1. Calculate how many full 360-degree spins to add (the "blur" effect)
             const extraSpins = (Math.floor(Math.random() * 5) + 6) * 360; 
-            currentRotation += extraSpins + (isHeads ? 0 : 180);
+            
+            // 2. Determine the target state based on current rotation
+            // We check if the coin is currently on Tails (odd multiple of 180) 
+            // and adjust so the NEXT rotation lands exactly on the intended face.
+            const currentFacingHeads = (currentRotation / 180) % 2 === 0;
+            
+            if (isHeads) {
+                // If we want Heads and we are on Tails, add 180. If on Heads, add 0.
+                currentRotation += extraSpins + (currentFacingHeads ? 0 : 180);
+            } else {
+                // If we want Tails and we are on Heads, add 180. If on Tails, add 0.
+                currentRotation += extraSpins + (currentFacingHeads ? 180 : 0);
+            }
 
             coin.style.transform = `rotateY(${currentRotation}deg)`;
 
-            // Haptic feedback for mobile
             if (window.navigator.vibrate) {
                 window.navigator.vibrate([30, 30, 30]);
             }
 
             setTimeout(() => {
-                // Only Heads counts as a win
                 if (isHeads) {
                     wins++;
                     localStorage.setItem('adplay_wins_only', wins);
                     winDisplay.innerText = wins;
-                    
-                    // Small win flash effect
                     winDisplay.style.color = "#22c55e";
                     setTimeout(() => winDisplay.style.color = "white", 600);
                 }
-                
                 btn.disabled = false;
-            }, 2000); // Wait for the transition time (2s)
+            }, 2000);
         });
     </script>
 </body>
